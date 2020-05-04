@@ -117,76 +117,143 @@ namespace CalculationStep
         /// </summary>
         public ExitType Execute(IStepExecutionContext context)
         {
-            IStateProperty sprVar1;
-            IStateProperty sprTableIndex;
+            IStateProperty stateIndex;
 
             // Set the row by changing the index value
-            sprVar1 = (IStateProperty)_props.GetProperty("MyStateTableIndex");
+            stateIndex = (IStateProperty)_props.GetProperty("MyStateTableIndex");
 
-            IState IndexState = sprVar1.GetState(context);
-            var vv = IndexState.StateValue;
-            IndexState.StateValue = DateTime.Now.Second / 20 + 1; // Just to generate a legitimate row index
+            IState IndexState = stateIndex.GetState(context);
 
-            CalcRow.MyKey = (int) IndexState.StateValue; // Put the index in the row class in case the calculation method might need it.
+            double stateValue = IndexState.StateValue;
+            IndexState.StateValue = DateTime.Now.Second / 20 + 1; // Just to generate a legitimate row index (1 to 3)
+
+            // Put the index in the row class in case the calculation method might need it.
+            CalcRow.MyKey = (int)IndexState.StateValue;
 
             // Get the file
             CalculationElement calcElement = (CalculationElement)prElement.GetElement(context);
             if (calcElement == null)
             {
-                context.ExecutionInformation.ReportError("CalculationElement is null.  Is it defined correctly?");
+                Alert(context, "CalculationElement is null.  Is it defined correctly?");
             }
 
+            PutSimioValuesToCalculationRow(context, prFields, CalcRow);
 
-            int fieldCount = prFields.GetCount(context);
 
-            // Run through each field in our Repeating group and get a corresponding value from our CalculatorRow class.
-
-            // For each field in our Simio Repeating Group
-            for (int ii = 0; ii < fieldCount; ii++)
-            {
-
-                // The thing returned from GetRow is IDisposable, so we use the using() pattern here
-                using (IPropertyReaders row = prFields.GetRow(ii, context))
-                {
-                    // Get the state property out of the i-th tuple of the repeat group
-                    IStateProperty statePropreader = (IStateProperty)row.GetProperty("Field");
-                    // Resolve that stateprop reader to get the runtime state value
-                    IState state = statePropreader.GetState(context);
-                    state.StateValue = DateTime.Now.Millisecond; // Assign some value
-
-                    switch (ii)
-                    {
-                        case 0:
-                            CalcRow.MyReal1 = state.StateValue;
-                            break;
-                        case 1:
-                            CalcRow.MyReal2 = state.StateValue;
-                            break;
-                        case 2:
-                            break;
-                        default:
-                            break;
-                    }
-                } // using
-                
-            } // for each field in repeating group
+            Logit(context, $"Info: Before Calculation: Row=[{CalcRow.MyKey} Value1={CalcRow.MyReal1} Value2={CalcRow.MyReal2}");
 
             //======= Run the calculator/optimizer/whatever ==============
-            if ( !RunCalculator(CalcRow, out string explanation) )
+            if (!RunCalculator(CalcRow, out string explanation))
             {
-                context.ExecutionInformation.TraceInformation($"Calculation Err={explanation}");
+                Logit(context, $"Calculation Err={explanation}");
+                return ExitType.AlternateExit;
             }
             else
             {
-                // Put values back into the table.
+                PutCalculationRowToSimioValues(context, prFields, CalcRow);
 
+                Logit(context, $"Info: After Calculation: Row=[{CalcRow.MyKey} Value1={CalcRow.MyReal1} Value2={CalcRow.MyReal2}");
 
-                
+                return ExitType.FirstExit;
             }
 
-            return ExitType.FirstExit;
         }
 
+
+        private static bool PutSimioValuesToCalculationRow(IStepExecutionContext context, IRepeatingPropertyReader prFields, CalculationRow calcRow)
+        {
+            try
+            {
+                int fieldCount = prFields.GetCount(context);
+
+                // For each field in our Simio Repeating Group
+                for (int ii = 0; ii < fieldCount; ii++)
+                {
+                    // The thing returned from GetRow is IDisposable, so we use the using() pattern here
+                    using (IPropertyReaders row = prFields.GetRow(ii, context))
+                    {
+                        // Get the state property out of the i-th tuple of the repeat group
+                        IStateProperty statePropreader = (IStateProperty)row.GetProperty("Field");
+
+                        // Resolve that stateprop reader to get the runtime state value
+                        IState state = statePropreader.GetState(context);
+
+                        switch (ii)
+                        {
+                            case 0:
+                                state.StateValue = DateTime.Now.Millisecond; // Assign some value
+                                calcRow.MyReal1 = state.StateValue;
+                                break;
+                            case 1:
+                                state.StateValue = DateTime.Now.Millisecond; // Assign some value
+                                calcRow.MyReal2 = state.StateValue;
+                                break;
+                            case 2:
+                                calcRow.MyReal1Sqrt = 0;
+                                break;
+                            case 3:
+                                calcRow.MyReal2Doubled = 0;
+                                break;
+                            default:
+                                break;
+                        }
+                    } // using
+
+                } // for each field in repeating group
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logit(context, $"Err={ex.Message}");
+                return false;
+            }
+        }
+        private static bool PutCalculationRowToSimioValues(IStepExecutionContext context, IRepeatingPropertyReader prFields, CalculationRow calcRow)
+        {
+            try
+            {
+                int fieldCount = prFields.GetCount(context);
+
+                // For each field in our Simio Repeating Group
+                for (int ii = 0; ii < fieldCount; ii++)
+                {
+                    // The thing returned from GetRow is IDisposable, so we use the using() pattern here
+                    using (IPropertyReaders row = prFields.GetRow(ii, context))
+                    {
+                        // Get the state property out of the i-th tuple of the repeat group
+                        IStateProperty statePropreader = (IStateProperty)row.GetProperty("Field");
+
+                        // Resolve that stateprop reader to get the runtime state value
+                        IState state = statePropreader.GetState(context);
+
+                        switch (ii)
+                        {
+                            case 0:
+                                state.StateValue = calcRow.MyReal1;
+                                break;
+                            case 1:
+                                state.StateValue = calcRow.MyReal2;
+                                break;
+                            case 2:
+                                state.StateValue = calcRow.MyReal1Sqrt;
+                                break;
+                            case 3:
+                                state.StateValue = calcRow.MyReal2Doubled;
+                                break;
+                            default:
+                                break;
+                        }
+                    } // using
+
+                } // for each field in repeating group
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logit(context, $"Err={ex.Message}");
+                return false;
+            }
+        }
 
         /// <summary>
         /// This mock optimizer will receive a list of rows, and each row is a class whose
@@ -199,7 +266,8 @@ namespace CalculationStep
             explanation = "";
             try
             {
-
+                calcRow.MyReal1Sqrt = Math.Sqrt(calcRow.MyReal1);
+                calcRow.MyReal2Doubled = Math.Pow(calcRow.MyReal2, 2);
 
                 return true;
             }
@@ -209,6 +277,18 @@ namespace CalculationStep
                 return false;
             }
         }
+
+
+        public static void Logit(IStepExecutionContext context, string msg)
+        {
+            context.ExecutionInformation.TraceInformation($"{msg}");
+        }
+
+        public static void Alert(IStepExecutionContext context, string msg)
+        {
+            context.ExecutionInformation.ReportError(msg);
+        }
+
 
     }
 
@@ -228,6 +308,8 @@ namespace CalculationStep
 
         public double MyReal1 { get; set; }
         public double MyReal2 { get; set; }
+        public double MyReal1Sqrt { get; set; }
+        public double MyReal2Doubled { get; set; }
 
 
     }

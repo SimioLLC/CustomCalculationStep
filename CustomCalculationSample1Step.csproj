@@ -8,8 +8,8 @@
     <ProjectGuid>{B820A2B0-34B2-451A-B209-3DF5289DB805}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomCalculationStep</RootNamespace>
-    <AssemblyName>CustomCalculationStep</AssemblyName>
+    <RootNamespace>CustomCalculationSample1Step</RootNamespace>
+    <AssemblyName>CustomCalculationSample1Step</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
