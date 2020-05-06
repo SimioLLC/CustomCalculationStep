@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CustomCalculationStep")]
-[assembly: AssemblyDescription("Shows how to interact with SimioTable for custom calculation")]
+[assembly: AssemblyTitle("CalculationSample2Step")]
+[assembly: AssemblyDescription("CalculationStep using external (SQL Server) Tables")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Simio LLC")]
-[assembly: AssemblyProduct("CalculationSample1Step")]
+[assembly: AssemblyProduct("CustomCalculationSample2Step")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("b820a2b0-34b2-451a-b209-3df5289db805")]
+[assembly: Guid("963104fc-fa84-4653-bd55-91e38a41c768")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("20.5.1.0")]
-[assembly: AssemblyFileVersion("20.5.1.0")]
+[assembly: AssemblyVersion("20.5.5.0")]
+[assembly: AssemblyFileVersion("20.5.5.0")]

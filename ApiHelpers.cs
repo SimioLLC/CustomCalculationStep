@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CalculationStep
+namespace CalculationSample1Step
 {
     public static class ApiHelpers
     {

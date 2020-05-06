@@ -4,7 +4,7 @@ using System.Text;
 using SimioAPI;
 using SimioAPI.Extensions;
 
-namespace CalculationStep
+namespace CalculationSample1Step
 {
     class CalculationElementDefinition : IElementDefinition
     {

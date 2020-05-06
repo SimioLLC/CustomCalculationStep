@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30002.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomCalculationSample1Step", "CustomCalculationSample1Step.csproj", "{B820A2B0-34B2-451A-B209-3DF5289DB805}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationSample1Step", "CalculationSample1Step.csproj", "{B820A2B0-34B2-451A-B209-3DF5289DB805}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CalculationSample2Step", "CustomCalculationSample2Step\CalculationSample2Step.csproj", "{963104FC-FA84-4653-BD55-91E38A41C768}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B820A2B0-34B2-451A-B209-3DF5289DB805}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B820A2B0-34B2-451A-B209-3DF5289DB805}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B820A2B0-34B2-451A-B209-3DF5289DB805}.Release|Any CPU.Build.0 = Release|Any CPU
+		{963104FC-FA84-4653-BD55-91E38A41C768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{963104FC-FA84-4653-BD55-91E38A41C768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{963104FC-FA84-4653-BD55-91E38A41C768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{963104FC-FA84-4653-BD55-91E38A41C768}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

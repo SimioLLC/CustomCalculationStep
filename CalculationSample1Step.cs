@@ -4,12 +4,12 @@ using System.Globalization;
 using SimioAPI;
 using SimioAPI.Extensions;
 
-using CalculationStep;
+using CalculationSample1Step;
 
 
-namespace CalculationStep
+namespace CalculationSample1Step
 {
-    class CalculationStepDefinition : IStepDefinition
+    class CalculationStep1Definition : IStepDefinition
     {
         #region IStepDefinition Members
 
@@ -18,7 +18,7 @@ namespace CalculationStep
         /// </summary>
         public string Name
         {
-            get { return "Calculation"; }
+            get { return "CalculationSample1"; }
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace CalculationStep
         /// </summary>
         public string Description
         {
-            get { return "The Calculation step is an example of reading/writing values to a Simio Table. The user defined File Element specifies output path"; }
+            get { return "The CalculationSample1 step is an example of reading/writing values to a Simio Table. The user defined File Element specifies output path"; }
         }
 
         /// <summary>
@@ -86,13 +86,13 @@ namespace CalculationStep
         /// </summary>
         public IStep CreateStep(IPropertyReaders properties)
         {
-            return new CalculationStep(properties);
+            return new CalculationSample1Step(properties);
         }
 
         #endregion
     }
 
-    class CalculationStep : IStep
+    class CalculationSample1Step : IStep
     {
         IPropertyReaders _props;
         IElementProperty prElement;
@@ -101,7 +101,7 @@ namespace CalculationStep
         CalculationRow CalcRow = new CalculationRow();
 
 
-        public CalculationStep(IPropertyReaders properties)
+        public CalculationSample1Step(IPropertyReaders properties)
         {
             _props = properties;
 
@@ -121,24 +121,15 @@ namespace CalculationStep
 
             // Set the row by changing the index value
             stateIndex = (IStateProperty)_props.GetProperty("MyStateTableIndex");
-
             IState IndexState = stateIndex.GetState(context);
 
-            double stateValue = IndexState.StateValue;
-            IndexState.StateValue = DateTime.Now.Second / 20 + 1; // Just to generate a legitimate row index (1 to 3)
+            // Mock code to generate a legitimate row index (1 to 3) based on time            
+            IndexState.StateValue = DateTime.Now.Second / 20 + 1; 
 
             // Put the index in the row class in case the calculation method might need it.
             CalcRow.MyKey = (int)IndexState.StateValue;
 
-            // Get the file
-            CalculationElement calcElement = (CalculationElement)prElement.GetElement(context);
-            if (calcElement == null)
-            {
-                Alert(context, "CalculationElement is null.  Is it defined correctly?");
-            }
-
             PutSimioValuesToCalculationRow(context, prFields, CalcRow);
-
 
             Logit(context, $"Info: Before Calculation: Row=[{CalcRow.MyKey} Value1={CalcRow.MyReal1} Value2={CalcRow.MyReal2}");
 
@@ -153,12 +144,10 @@ namespace CalculationStep
                 PutCalculationRowToSimioValues(context, prFields, CalcRow);
 
                 Logit(context, $"Info: After Calculation: Row=[{CalcRow.MyKey} Value1={CalcRow.MyReal1} Value2={CalcRow.MyReal2}");
-
                 return ExitType.FirstExit;
             }
 
         }
-
 
         private static bool PutSimioValuesToCalculationRow(IStepExecutionContext context, IRepeatingPropertyReader prFields, CalculationRow calcRow)
         {

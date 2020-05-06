@@ -8,8 +8,8 @@
     <ProjectGuid>{B820A2B0-34B2-451A-B209-3DF5289DB805}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomCalculationSample1Step</RootNamespace>
-    <AssemblyName>CustomCalculationSample1Step</AssemblyName>
+    <RootNamespace>CalculationSample1Step</RootNamespace>
+    <AssemblyName>CalculationSample1Step</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -50,8 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiHelpers.cs" />
-    <Compile Include="CalculationElement.cs" />
-    <Compile Include="CalculationStep.cs" />
+    <Compile Include="CalculationSample1Element.cs" />
+    <Compile Include="CalculationSample1Step.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
