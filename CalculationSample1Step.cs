@@ -5,7 +5,9 @@ using SimioAPI;
 using SimioAPI.Extensions;
 
 using CalculationSample1Step;
-
+using System.Linq;
+using System.Text;
+using System.IO;
 
 namespace CalculationSample1Step
 {
@@ -95,18 +97,42 @@ namespace CalculationSample1Step
     class CalculationSample1Step : IStep
     {
         IPropertyReaders _props;
+
         IElementProperty prElement;
         IRepeatingPropertyReader prFields;
+        IStateProperty prStateTableIndex;
 
-        CalculationRow CalcRow = new CalculationRow();
+        Random RandomGenerator;
 
+        List<CalculationRow> CalcDataList;
 
+        int NbrTableRows { get; set; }
+
+        /// <summary>
+        /// Constructor. Initialize data.
+        /// </summary>
+        /// <param name="properties"></param>
         public CalculationSample1Step(IPropertyReaders properties)
         {
             _props = properties;
 
             prElement = (IElementProperty)_props.GetProperty("CalculationElement");
             prFields = (IRepeatingPropertyReader)_props.GetProperty("MyFieldValues");
+            prStateTableIndex = (IStateProperty)_props.GetProperty("MyStateTableIndex");
+
+            RandomGenerator = new Random();
+            NbrTableRows = 5;
+
+
+            CalcDataList = new List<CalculationRow>();
+
+            for (int tr = 1; tr <= NbrTableRows; tr++)
+            {
+                CalculationRow cr = new CalculationRow();
+                cr.MyKey = tr;
+                CalcDataList.Add(cr);
+            }
+
 
         }
 
@@ -117,39 +143,77 @@ namespace CalculationSample1Step
         /// </summary>
         public ExitType Execute(IStepExecutionContext context)
         {
-            IStateProperty stateIndex;
+            //IStateProperty stateIndex;
 
             // Set the row by changing the index value
-            stateIndex = (IStateProperty)_props.GetProperty("MyStateTableIndex");
-            IState IndexState = stateIndex.GetState(context);
+            //stateIndex = (IStateProperty)_props.GetProperty("MyStateTableIndex");
+            IState IndexState = prStateTableIndex.GetState(context);
 
-            // Mock code to generate a legitimate row index (1 to 3) based on time            
-            IndexState.StateValue = DateTime.Now.Second / 20 + 1; 
+            CalculationElement calcElement = (CalculationElement) prElement.GetElement(context);
 
-            // Put the index in the row class in case the calculation method might need it.
-            CalcRow.MyKey = (int)IndexState.StateValue;
+            string filepath = calcElement.FilePath;
+            bool outputToFile = calcElement.OutputToFile;
 
-            PutSimioValuesToCalculationRow(context, prFields, CalcRow);
-
-            Logit(context, $"Info: Before Calculation: Row=[{CalcRow.MyKey} Value1={CalcRow.MyReal1} Value2={CalcRow.MyReal2}");
+            foreach (CalculationRow cr in CalcDataList)
+            {
+                // Set the Simio Table row by using its key value         
+                IndexState.StateValue = cr.MyKey;
+                PutSimioValuesToCalculationRow(context, RandomGenerator, prFields, cr);
+            } // next table row
 
             //======= Run the calculator/optimizer/whatever ==============
-            if (!RunCalculator(CalcRow, out string explanation))
+            if (!RunCalculator(CalcDataList, out string explanation))
             {
                 Logit(context, $"Calculation Err={explanation}");
                 return ExitType.AlternateExit;
             }
             else
             {
-                PutCalculationRowToSimioValues(context, prFields, CalcRow);
+                foreach (CalculationRow cr in CalcDataList)
+                {
+                    IndexState.StateValue = cr.MyKey;
+                    PutCalculationRowToSimioValues(context, prFields, cr);
+                }
 
-                Logit(context, $"Info: After Calculation: Row=[{CalcRow.MyKey} Value1={CalcRow.MyReal1} Value2={CalcRow.MyReal2}");
+                if ( outputToFile )
+                    AppendDataToFile(filepath, CalcDataList);
+
                 return ExitType.FirstExit;
             }
 
         }
 
-        private static bool PutSimioValuesToCalculationRow(IStepExecutionContext context, IRepeatingPropertyReader prFields, CalculationRow calcRow)
+
+        private static void AppendDataToFile(string filepath, List<CalculationRow> calcDataList)
+        {
+            try
+            {
+                if (!File.Exists(filepath))
+                {
+                    File.Create(filepath);
+                    System.Threading.Thread.Sleep(100);
+                }
+
+                StringBuilder sb = new StringBuilder();
+                foreach (CalculationRow cr in calcDataList)
+                    sb.AppendLine($"{cr}");
+                sb.AppendLine($"{DateTime.Now:HH:mm:ss.ffff} ===========================");
+
+                StringBuilder all = new StringBuilder(File.ReadAllText(filepath));
+                all.Append(sb);
+
+                File.WriteAllText(filepath, all.ToString());
+
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"File={filepath} Err={ex}");
+            }
+        }
+
+
+
+        private static bool PutSimioValuesToCalculationRow(IStepExecutionContext context, Random rand, IRepeatingPropertyReader prFields, CalculationRow calcRow)
         {
             try
             {
@@ -170,18 +234,18 @@ namespace CalculationSample1Step
                         switch (ii)
                         {
                             case 0:
-                                state.StateValue = DateTime.Now.Millisecond; // Assign some value
+                                state.StateValue = rand.Next(); // Assign some value
                                 calcRow.MyReal1 = state.StateValue;
                                 break;
                             case 1:
-                                state.StateValue = DateTime.Now.Millisecond; // Assign some value
+                                state.StateValue = rand.Next(); // Assign some value
                                 calcRow.MyReal2 = state.StateValue;
                                 break;
                             case 2:
-                                calcRow.MyReal1Sqrt = 0;
+                                //calcRow.MyReal1Sqrt = 0;
                                 break;
                             case 3:
-                                calcRow.MyReal2Doubled = 0;
+                                //calcRow.MyReal2Doubled = 0;
                                 break;
                             default:
                                 break;
@@ -250,14 +314,16 @@ namespace CalculationSample1Step
         /// 
         /// </summary>
         /// <returns></returns>
-        private bool RunCalculator(CalculationRow calcRow, out string explanation )
+        private bool RunCalculator(List<CalculationRow> calcDataList, out string explanation)
         {
             explanation = "";
             try
             {
-                calcRow.MyReal1Sqrt = Math.Sqrt(calcRow.MyReal1);
-                calcRow.MyReal2Doubled = Math.Pow(calcRow.MyReal2, 2);
-
+                foreach (CalculationRow cr in calcDataList)
+                {
+                    cr.MyReal1Sqrt = Math.Sqrt(cr.MyReal1);
+                    cr.MyReal2Doubled = Math.Pow(cr.MyReal2, 2);
+                }
                 return true;
             }
             catch (Exception ex)
@@ -295,10 +361,21 @@ namespace CalculationSample1Step
         /// </summary>
         public int MyKey { get; set; }
 
+        /// <summary>
+        /// The index into the Simio table.
+        /// </summary>
+        public int MyIndex { get { return MyKey - 1; } }
+
         public double MyReal1 { get; set; }
         public double MyReal2 { get; set; }
         public double MyReal1Sqrt { get; set; }
         public double MyReal2Doubled { get; set; }
+
+
+        public override string ToString()
+        {
+            return $"{MyKey} R1={MyReal1:0.00}  R2={MyReal2:0.00} Sqrt={MyReal1Sqrt:0.00} Double={MyReal2Doubled:0.00}";
+        }
 
 
     }

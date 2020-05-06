@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Runtime.CompilerServices;
 using System.Text;
 using SimioAPI;
 using SimioAPI.Extensions;
@@ -53,6 +55,9 @@ namespace CalculationSample1Step
         {
             IPropertyDefinition pd = schema.PropertyDefinitions.AddStringProperty("FilePath", String.Empty);
             pd.Description = "The name of the file path for output.";
+
+            pd = schema.PropertyDefinitions.AddBooleanProperty("OutputToFile");
+            pd.Description = "If true, append table information to file each time step is executed";
         }
 
         /// <summary>
@@ -70,54 +75,28 @@ namespace CalculationSample1Step
     class CalculationElement : IElement, IDisposable
     {
         IElementData _data;
-        string _fullFilepath;
+        string _Filepath;
+        bool _OutputToFile;
+
+        public string FilePath { get; private set; }
+
+        public bool OutputToFile { get; private set; }
 
         public CalculationElement(IElementData data)
         {
             _data = data;
-            IPropertyReader fileNameProp = _data.Properties.GetProperty("FilePath");
+            IPropertyReader prFileName = _data.Properties.GetProperty("FilePath");
+            IPropertyReader prOutputToFile = _data.Properties.GetProperty("OutputToFile");
 
-            // Cache the names of the files to open for reading or writing
-            string fileName = fileNameProp.GetStringValue(_data.ExecutionContext);
-            if (String.IsNullOrEmpty(fileName) == false)
-            {
-                string fileRoot = null;
-                string fileDirectoryName = null;
-                string fileExtension = null;
+            FilePath = prFileName.GetStringValue(_data.ExecutionContext);
+            OutputToFile = bool.Parse(prOutputToFile.GetStringValue(_data.ExecutionContext));
 
-                try
-                {
-                    fileRoot = System.IO.Path.GetPathRoot(fileName);
-                    fileDirectoryName = System.IO.Path.GetDirectoryName(fileName);
-                    fileExtension = System.IO.Path.GetExtension(fileName);
-                }
-                catch (ArgumentException e)
-                {
-                    LogIt(data, e.Message);
-                }
-
-                string simioProjectFolder = _data.ExecutionContext.ExecutionInformation.ProjectFolder;
-                string simioExperimentName = _data.ExecutionContext.ExecutionInformation.ExperimentName;
-                string simioScenarioName = _data.ExecutionContext.ExecutionInformation.ScenarioName;
-                string simioReplicationNumber = _data.ExecutionContext.ExecutionInformation.ReplicationNumber.ToString();
-
-                if (String.IsNullOrEmpty(fileDirectoryName) || String.IsNullOrEmpty(fileRoot))
-                {
-                    fileDirectoryName = simioProjectFolder;
-                    fileName = fileDirectoryName + "\\" + fileName;
-                }
-
-                if (String.IsNullOrEmpty(simioExperimentName))
-                    _fullFilepath = fileName;
-                else
-                    _fullFilepath = $"{System.IO.Path.ChangeExtension(fileName, null)}_{simioExperimentName}_{simioScenarioName}_Rep{simioReplicationNumber}{fileExtension}";
-            }
         }
 
 
         public void LogIt(IElementData data, string msg)
         {
-            data.ExecutionContext.ExecutionInformation.ReportError($"Failed to create runtime file element. Message: {msg}");
+            data.ExecutionContext.ExecutionInformation.ReportError($"Err={msg}");
         }
 
         #region IElement Members
