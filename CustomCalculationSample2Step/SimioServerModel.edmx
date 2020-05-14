@@ -4,7 +4,17 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="SimioCalculationStepSample2Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="SimioCalculationStepSample2Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="EntityVisits">
+          <Key>
+            <PropertyRef Name="EntityId" />
+          </Key>
+          <Property Name="EntityId" Type="nvarchar" MaxLength="20" Nullable="false" />
+          <Property Name="ArrivalTime" Type="datetime" />
+          <Property Name="DepartureTime" Type="datetime" />
+          <Property Name="Resource" Type="nvarchar" MaxLength="50" />
+          <Property Name="ServerId" Type="nvarchar" MaxLength="20" />
+        </EntityType>
         <EntityType Name="Servers">
           <Key>
             <PropertyRef Name="ID" />
@@ -25,11 +35,11 @@
           <Property Name="VisitStop" Type="datetimeoffset" Precision="7" />
         </EntityType>
         <EntityContainer Name="SimioCalculationStepSample2ModelStoreContainer">
+          <EntitySet Name="EntityVisits" EntityType="Self.EntityVisits" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Servers" EntityType="Self.Servers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ServerVisits" EntityType="Self.ServerVisits" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="SimioCalculationStepSample2Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -55,7 +65,18 @@
         <EntityContainer Name="SimioCalculationStepSample2Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Servers" EntityType="Self.Server" />
           <EntitySet Name="ServerVisits" EntityType="Self.ServerVisit" />
+          <EntitySet Name="EntityVisits" EntityType="SimioCalculationStepSample2Model.EntityVisit" />
         </EntityContainer>
+        <EntityType Name="EntityVisit">
+          <Key>
+            <PropertyRef Name="EntityId" />
+          </Key>
+          <Property Name="EntityId" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="ArrivalTime" Type="DateTime" Precision="3" />
+          <Property Name="DepartureTime" Type="DateTime" Precision="3" />
+          <Property Name="Resource" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ServerId" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -80,6 +101,17 @@
                 <ScalarProperty Name="ServerID" ColumnName="ServerID" />
                 <ScalarProperty Name="VisitStart" ColumnName="VisitStart" />
                 <ScalarProperty Name="VisitStop" ColumnName="VisitStop" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EntityVisits">
+            <EntityTypeMapping TypeName="SimioCalculationStepSample2Model.EntityVisit">
+              <MappingFragment StoreEntitySet="EntityVisits">
+                <ScalarProperty Name="ServerId" ColumnName="ServerId" />
+                <ScalarProperty Name="Resource" ColumnName="Resource" />
+                <ScalarProperty Name="DepartureTime" ColumnName="DepartureTime" />
+                <ScalarProperty Name="ArrivalTime" ColumnName="ArrivalTime" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

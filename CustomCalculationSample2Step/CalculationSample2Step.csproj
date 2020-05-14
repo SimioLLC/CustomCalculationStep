@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>C:\Users\dan_h\Documents\SimioUserExtensions\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -60,6 +60,10 @@
   <ItemGroup>
     <Compile Include="CalculationSample2Element.cs" />
     <Compile Include="CalculationSample2Step.cs" />
+    <Compile Include="EntityFrameworkHelpers.cs" />
+    <Compile Include="EntityVisit.cs">
+      <DependentUpon>SimioServerModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs">
       <DependentUpon>SimioServerModel.tt</DependentUpon>
@@ -67,6 +71,8 @@
     <Compile Include="ServerVisit.cs">
       <DependentUpon>SimioServerModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="SimioCalculationStepSample2EFHelpers.cs" />
+    <Compile Include="SimioPropertyHelper.cs" />
     <Compile Include="SimioServerModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

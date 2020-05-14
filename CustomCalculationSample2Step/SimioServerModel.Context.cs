@@ -27,5 +27,6 @@ namespace CalculationSample2Step
     
         public virtual DbSet<Server> Servers { get; set; }
         public virtual DbSet<ServerVisit> ServerVisits { get; set; }
+        public virtual DbSet<EntityVisit> EntityVisits { get; set; }
     }
 }

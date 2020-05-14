@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data.Common;
+using System.Data.Entity;
+using System.Data.Entity.Core.EntityClient;
+using System.Data.SqlClient;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
-
+using CalculationSample2Step;
 using SimioAPI;
 using SimioAPI.Extensions;
 
@@ -59,19 +65,21 @@ namespace CustomCalculationSample2Step
         /// </summary>
         public void DefineSchema(IPropertyDefinitions schema)
         {
-            // Example of how to add a property definition to the step.
-            IPropertyDefinition pd;
-            pd = schema.AddExpressionProperty("MyExpression", "0.0");
-            pd.DisplayName = "My Expression";
-            pd.Description = "An expression property for this step.";
-            pd.Required = true;
+            IPropertyDefinition pd = null;
 
-            // Example of how to add an element property definition to the step.
-            pd = schema.AddElementProperty("UserElementName", UserElementDefinition.MY_ID);
-            pd.DisplayName = "UserElement Name";
-            pd.Description = "The name of a UserElement element referenced by this step.";
-            pd.Required = true;
+            pd = schema.AddStringProperty("SqlInstance", "");
+            pd.DisplayName = "SQL Instance";
+            pd.Description = @"The SQL Instance name, aka DataSource. E.g. (localhost)\SqlExress01";
+
+            pd = schema.AddStringProperty("SqlDbName", "");
+            pd.DisplayName = @"SQL DB Name";
+            pd.Description = "The database name, or 'Initial Catalog'";
+
+            pd = schema.AddDateTimeProperty("StartDateTime", DateTime.Now);
+            pd.DisplayName = @"Start Date/Time";
+            pd.Description = "When the simulation starts. Defaults to the current time.";
         }
+
 
         /// <summary>
         /// Method called to create a new instance of this step type to place in a process.
@@ -89,6 +97,12 @@ namespace CustomCalculationSample2Step
     {
         IPropertyReaders _properties;
 
+        string _efConnectString;
+
+        DateTime _dtStart = DateTime.MinValue;
+
+        private SimioPropertyHelper PropertyHelper;
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -96,38 +110,86 @@ namespace CustomCalculationSample2Step
         public CalculationSample2Step(IPropertyReaders properties)
         {
             _properties = properties;
+
+            PropertyHelper = new SimioPropertyHelper(properties);
+
+            //var prSqlConnectionString = _properties.GetProperty("SqlConnectionString");
+             
+
         }
 
         #region IStep Members
+
+
+
 
         /// <summary>
         /// Method called when a process token executes the step.
         /// </summary>
         public ExitType Execute(IStepExecutionContext context)
         {
+            if ( string.IsNullOrEmpty(_efConnectString))
+            {
+                string sqlInstance = PropertyHelper.GetString(context, "SqlInstance");
+                string sqlDbName = PropertyHelper.GetString(context, "SqlDbName");
 
+                // The name of the Entity Framework Model that we created.
+                string efModel = "SimioServerModel";
 
-            // Example of how to get the value of a step property.
-            IPropertyReader myExpressionProp = _properties.GetProperty("MyExpression") as IPropertyReader;
-            string myExpressionPropStringValue = myExpressionProp.GetStringValue(context);
-            double myExpressionPropDoubleValue = myExpressionProp.GetDoubleValue(context);
+                _efConnectString = EntityFrameworkHelpers.BuildEfConnectionString(sqlInstance, sqlDbName, efModel);
 
-            // Example of how to get an element reference specified in an element property of the step.
-            IElementProperty myElementProp = (IElementProperty)_properties.GetProperty("UserElementName");
-            CalculationSample2Element myElement = (CalculationSample2Element)myElementProp.GetElement(context);
+                string startDt = PropertyHelper.GetString(context, "StartDateTime");
+                _dtStart = DateTime.Parse(startDt);
 
-            // Example of how to display a trace line for the step.
-            context.ExecutionInformation.TraceInformation($"The value of expression '{myExpressionPropStringValue}' is '{myExpressionPropDoubleValue}'.");
+                string sqlConnectString = EntityFrameworkHelpers.BuildDbConnectionString(sqlInstance, sqlDbName);
+                using ( SqlConnection sqlConn = new SqlConnection(sqlConnectString))
+                {
+                    sqlConn.Open();
+                    using (SqlCommand cmd = new SqlCommand("DELETE * FROM EntityVisits WHERE 1=1"))
+                    {
+                        int nn = cmd.ExecuteNonQuery();
+                    }
+                }
+
+            }
+
+            var entity = context.AssociatedObject;
+           
+            
+            using ( SimioCalculationStepSample2Entities efContext = new SimioCalculationStepSample2Entities(_efConnectString) )
+            {
+                var server = efContext.Servers.SingleOrDefault(rr => rr.Name == "");
+
+                // First see if this Enity exists
+                EntityVisit ev = new EntityVisit();
+                ev.EntityId = EntityFrameworkHelpers.BuildEntityKey(entity.HierarchicalDisplayName); 
+                ev.ArrivalTime = _dtStart.AddSeconds( context.Calendar.TimeNow );
+                ev.DepartureTime = null;
+
+                efContext.EntityVisits.Add(ev);
+
+                efContext.SaveChanges();
+            }
 
             return ExitType.FirstExit;
         }
 
 
+        /// <summary>
+        /// Displays a Trace line when running Simio in Trace mode
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="msg"></param>
         public static void Logit(IStepExecutionContext context, string msg)
         {
             context.ExecutionInformation.TraceInformation($"CalculationSample2Step::{msg}");
         }
 
+        /// <summary>
+        /// Displays a modal Simio alert box
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="msg"></param>
         public static void Alert(IStepExecutionContext context, string msg)
         {
             context.ExecutionInformation.ReportError($"CalculationSample2Step::{msg}");

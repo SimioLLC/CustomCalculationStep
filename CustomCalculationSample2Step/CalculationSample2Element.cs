@@ -51,12 +51,6 @@ namespace CustomCalculationSample2Step
         /// </summary>
         public void DefineSchema(IElementSchema schema)
         {
-            // Example of how to add a property definition to the element.
-            IPropertyDefinition pd;
-            pd = schema.PropertyDefinitions.AddExpressionProperty("MyExpression", "0.0");
-            pd.DisplayName = "My Expression";
-            pd.Description = "An expression property for this element.";
-            pd.Required = true;
 
             // Example of how to add a state definition to the element.
             IStateDefinition sd;
