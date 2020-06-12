@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CalculationSample2Step
+namespace EFInterfaceStep
 {
     using System;
     using System.Collections.Generic;

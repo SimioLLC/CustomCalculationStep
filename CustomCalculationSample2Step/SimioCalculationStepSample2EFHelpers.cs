@@ -7,7 +7,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Reflection.Emit;
 
-namespace CalculationSample2Step
+namespace EFInterfaceStep
 {
     /// <summary>
     /// We add this so we can have a constructur that supplies a connect string.

@@ -6,7 +6,7 @@ using System.Text;
 using SimioAPI;
 using SimioAPI.Extensions;
 
-namespace CalculationSample1Step
+namespace SimioTableInterfaceStep
 {
     class CalculationElementDefinition : IElementDefinition
     {
@@ -17,7 +17,7 @@ namespace CalculationSample1Step
         /// </summary>
         public string Name
         {
-            get { return "CalculationElement"; }
+            get { return "SimioTableInterfaceElement"; }
         }
 
         /// <summary>
@@ -43,9 +43,11 @@ namespace CalculationSample1Step
         {
             get { return MY_ID; }
         }
-        // We need to use this ID in the element reference property of the Read/Write steps, so we make it public
-        // {Changed Apr2020}
 
+        /// <summary>
+        /// We need to use this ID in the element reference property of the Read/Write steps, so we make it public.
+        /// Changed Apr2020
+        /// </summary>
         public static readonly Guid MY_ID = new Guid("{D6F34FEC-4C60-4D23-BDB0-1221934F76C0}");
 
         /// <summary>

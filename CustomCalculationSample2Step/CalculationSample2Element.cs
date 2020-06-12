@@ -6,7 +6,7 @@ using System.Text;
 using SimioAPI;
 using SimioAPI.Extensions;
 
-namespace CustomCalculationSample2Step
+namespace CustomEFInterfaceStep
 {
     class UserElementDefinition : IElementDefinition
     {

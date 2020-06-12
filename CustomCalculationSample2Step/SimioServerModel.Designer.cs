@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'E:\(svn azure)\SimioCloud\API\Examples2020\CustomCalculationSteps\CustomCalculationSample2Step\SimioServerModel.edmx'. 
+﻿// T4 code generation is enabled for model 'E:\(svn azure)\SimioCloud\API\Examples2020\CustomCalculationSteps\CustomEFInterfaceStep\SimioServerModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

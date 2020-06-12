@@ -8,13 +8,19 @@ using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
-using CalculationSample2Step;
+using EFInterfaceStep;
 using SimioAPI;
 using SimioAPI.Extensions;
 
-namespace CustomCalculationSample2Step
+namespace CustomEFInterfaceStep
 {
-    class CalculationSample2StepDefinition : IStepDefinition
+    /// <summary>
+    /// Demonstrates using an execution step communicating with SQL Server using EF.
+    /// In this example, the step is used to record Entity actions
+    /// Each time an Entity enters the step the following values are set or updated in the database:
+    /// 
+    /// </summary>
+    class EFInterfaceStepDefinition : IStepDefinition
     {
         #region IStepDefinition Members
 
@@ -87,13 +93,13 @@ namespace CustomCalculationSample2Step
         /// </summary>
         public IStep CreateStep(IPropertyReaders properties)
         {
-            return new CalculationSample2Step(properties);
+            return new EFInterfaceStep(properties);
         }
 
         #endregion
     }
 
-    class CalculationSample2Step : IStep
+    class EFInterfaceStep : IStep
     {
         IPropertyReaders _properties;
 
@@ -107,7 +113,7 @@ namespace CustomCalculationSample2Step
         /// Constructor.
         /// </summary>
         /// <param name="properties"></param>
-        public CalculationSample2Step(IPropertyReaders properties)
+        public EFInterfaceStep(IPropertyReaders properties)
         {
             _properties = properties;
 
@@ -182,7 +188,7 @@ namespace CustomCalculationSample2Step
         /// <param name="msg"></param>
         public static void Logit(IStepExecutionContext context, string msg)
         {
-            context.ExecutionInformation.TraceInformation($"CalculationSample2Step::{msg}");
+            context.ExecutionInformation.TraceInformation($"EFInterfaceStep::{msg}");
         }
 
         /// <summary>
@@ -192,7 +198,7 @@ namespace CustomCalculationSample2Step
         /// <param name="msg"></param>
         public static void Alert(IStepExecutionContext context, string msg)
         {
-            context.ExecutionInformation.ReportError($"CalculationSample2Step::{msg}");
+            context.ExecutionInformation.ReportError($"EFInterfaceStep::{msg}");
         }
 
         #endregion

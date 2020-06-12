@@ -8,8 +8,8 @@
     <ProjectGuid>{B820A2B0-34B2-451A-B209-3DF5289DB805}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CalculationSample1Step</RootNamespace>
-    <AssemblyName>CalculationSample1Step</AssemblyName>
+    <RootNamespace>SimioTableInterfaceStep</RootNamespace>
+    <AssemblyName>SimioTableInterfaceStep</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -50,9 +50,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiHelpers.cs" />
-    <Compile Include="CalculationSample1Element.cs" />
-    <Compile Include="CalculationSample1Step.cs" />
+    <Compile Include="SimioTableInterfaceElement.cs" />
+    <Compile Include="SimioTableInterfaceStep.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimioTableElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

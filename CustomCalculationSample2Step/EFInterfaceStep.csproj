@@ -8,8 +8,8 @@
     <ProjectGuid>{963104FC-FA84-4653-BD55-91E38A41C768}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CalculationSample2Step</RootNamespace>
-    <AssemblyName>CalculationSample2Step</AssemblyName>
+    <RootNamespace>EFInterfaceStep</RootNamespace>
+    <AssemblyName>EFInterfaceStep</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CalculationSample2Element.cs" />
-    <Compile Include="CalculationSample2Step.cs" />
+    <Compile Include="EFInterfaceStep.cs" />
     <Compile Include="EntityFrameworkHelpers.cs" />
     <Compile Include="EntityVisit.cs">
       <DependentUpon>SimioServerModel.tt</DependentUpon>

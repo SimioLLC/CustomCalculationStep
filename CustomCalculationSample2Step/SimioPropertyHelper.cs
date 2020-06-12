@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CalculationSample2Step
+namespace EFInterfaceStep
 {
     public class SimioPropertyHelper
     {
@@ -44,7 +44,7 @@ namespace CalculationSample2Step
         /// <param name="msg"></param>
         public static void Logit(IStepExecutionContext context, string msg)
         {
-            context.ExecutionInformation.TraceInformation($"CalculationSample2Step::{msg}");
+            context.ExecutionInformation.TraceInformation($"EFInterfaceStep::{msg}");
         }
 
     }

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CalculationSample2Step
+namespace EFInterfaceStep
 {
     public static class EntityFrameworkHelpers
     {
